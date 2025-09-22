@@ -1,0 +1,25 @@
+services:
+  auth_db:
+    image: postgres:17-bookworm
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    volumes:
+      - auth_db:/var/lib/postgresql/data
+  
+  user_service:
+    build: ./auth_service/
+    command: sh -c "./wait-for-it.sh auth_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - SECRET_KEY=E9AB13F523CA6BCF7962BB3E65AB76BCF7962BB3E65AB7
+      - IS_DEBUG=True
+      - DB_NAME=db
+      - DB_HOST=auth_db
+    depends_on:
+      - auth_db
+    ports:
+      - "8000:8000"
+
+volumes:
+  auth_db:

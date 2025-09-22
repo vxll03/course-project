@@ -15,6 +15,7 @@ def get_service(db=Depends(get_db)) -> UserService:
     return UserService(db)
 
 
+# user=Depends(authenticate)
 async def authenticate(request: Request, db=Depends(get_db)):
     return await UserService(db).validate_token(
         request.cookies.get('access_token'), 'access'
@@ -22,7 +23,7 @@ async def authenticate(request: Request, db=Depends(get_db)):
 
 
 @router.get('/health_check/')
-async def health_check(db=Depends(get_db), user=Depends(authenticate)):
+async def health_check(db=Depends(get_db)):
     if await db.scalar(select(1)):
         return Response(message='Service correctly working')
 
