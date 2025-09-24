@@ -1,4 +1,9 @@
 services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
   auth_db:
     image: postgres:17-bookworm
     environment:
@@ -7,7 +12,16 @@ services:
       - POSTGRES_DB=db
     volumes:
       - auth_db:/var/lib/postgresql/data
-  
+
+  chat_db:
+    image: postgres:17-bookworm
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    volumes:
+      - chat_db:/var/lib/postgresql/data
+
   user_service:
     build: ./auth_service/
     command: sh -c "./wait-for-it.sh auth_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
@@ -21,5 +35,17 @@ services:
     ports:
       - "8000:8000"
 
+  chat_service:
+    build: ./chat_service/
+    command: sh -c "./wait-for-it.sh chat_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - DB_NAME=db 
+      - DB_HOST=chat_db
+    depends_on:
+      - chat_db
+    ports:
+      - "8001:8000"
+
 volumes:
   auth_db:
+  chat_db:
