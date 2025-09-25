@@ -1,0 +1,21 @@
+meta {
+  name: CategoriesCheck
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{local}}:8000/bookshop/categories/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Категория 2 под удаление"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
