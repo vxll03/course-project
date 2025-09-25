@@ -1,0 +1,21 @@
+meta {
+  name: AuthorsCheck
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{local}}:8000/bookshop/authors/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "last_name": "Иванов"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
