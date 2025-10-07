@@ -11,7 +11,7 @@ export interface ColorSet {
   unpack(): Object;
 }
 
-function unpack(this: ColorSet) {
+function unpack(this: ColorSet): Object {
   return {
     "--back": this.background,
     "--border": this.border,

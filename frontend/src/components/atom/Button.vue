@@ -33,8 +33,11 @@ customStyle.value = {
 @use "@/assets/style/variables" as *;
 
 .btn-container {
-  width: 7vw;
+  min-width: 7vw;
+  width: auto;
   height: 4vh;
+
+  padding: 0 2px;
 
   display: flex;
   flex-direction: row;

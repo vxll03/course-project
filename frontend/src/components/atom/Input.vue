@@ -1,5 +1,8 @@
 <template>
-  <div class="input-container" :style="customStyle">
+  <div
+    class="input-container"
+    :style="customStyle"
+  >
     <input :type="props.type" :placeholder="props.placeholder" />
     <img v-if="props.img" :src="imgPath" alt="img" />
   </div>
@@ -7,6 +10,7 @@
 
 <script setup lang="ts">
 import { grayColor, type ColorSet } from "@/services/ColorSet";
+import type { Size } from "@/services/BasicInterfaces";
 import { ref } from "vue";
 
 interface Props {
@@ -14,6 +18,7 @@ interface Props {
   img?: string;
   type: string;
   colorSet?: ColorSet;
+  size?: Size | null;
 }
 const props = withDefaults(defineProps<Props>(), {
   placeholder: "Введите текст",
@@ -22,14 +27,21 @@ const props = withDefaults(defineProps<Props>(), {
 
 const imgPath = `src/assets/img/${props.img}`;
 const customStyle = ref({});
-customStyle.value = props.colorSet?.unpack();
+customStyle.value = Object.assign({}, props.colorSet?.unpack(), {
+  '--width': props.size?.width,
+  '--height': props.size?.height
+});
+
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/style/variables" as *;
 .input-container {
-  width: 50vw;
-  height: 4vh;
+  --width: 50vw;
+  --height: 4vh;
+
+  width: var(--width);
+  height: var(--height);
 
   display: flex;
   flex-direction: row;
@@ -72,7 +84,7 @@ customStyle.value = props.colorSet?.unpack();
     color: var(--fore);
     margin-right: 4px;
     border-radius: inherit;
-    opacity: .5;
+    opacity: 0.5;
     transition: 0.5s all;
   }
 }

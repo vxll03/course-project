@@ -1,7 +1,7 @@
 <template>
   <div class="header-container">
     <div class="logo">
-      <img src="@/assets/img/logo.png" alt="Logo" />
+      <img src="@/assets/img/logo.png" alt="Logo" @click="goToMain"/>
     </div>
     <div class="search">
       <Input type="text" img="search.svg" placeholder="Введите книгу" />
@@ -10,7 +10,7 @@
       <Button text="Каталог" />
       <Button text="Корзина" />
       <Button text="Закладки" />
-      <Button text="Войти" :colorSet="greenColor" />
+      <Button text="Войти" :colorSet="greenColor" @click="goToAuth" />
     </div>
   </div>
 </template>
@@ -19,6 +19,16 @@
 import Button from "@/components/atom/Button.vue";
 import { greenColor } from "@/services/ColorSet";
 import Input from "../atom/Input.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter()
+
+const goToAuth = () => {
+  router.push('/auth')
+}
+const goToMain = () => {
+  router.push('/')
+}
 </script>
 
 <style scoped lang="scss">

@@ -1,15 +1,13 @@
 <template>
   <div class="app-wrapper">
     <div class="content-wrapper">
-      <Header />
-      <MainPage></MainPage>
+        <RouterView />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Header from "./components/compose/Header.vue";
-import MainPage from "@/pages/MainPage/MainPage.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <style scoped lang="scss">
@@ -26,7 +24,7 @@ import MainPage from "@/pages/MainPage/MainPage.vue";
 .content-wrapper {
   width: 80%;
   height: auto;
-  margin-top: 3vh;
+  margin-top: 10px;
   border-radius: 20px;
 }
 </style>
