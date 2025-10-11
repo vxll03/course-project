@@ -8,86 +8,90 @@
           :title="book.title"
           :text="book.text"
           :price="book.price"
-          book_id="1"
+          :bookId="book.id"
         />
       </div>
       <div class="book-container">
         <BookCard
-          v-for="book in newBooks"
+          v-for="book in bestBooks"
           :title="book.title"
           :text="book.text"
           :price="book.price"
+          :bookId="book.id"
         />
       </div>
       <div class="author-container">
         <AuthorCard
           v-for="author in bestAuthors"
           :name="author.name"
-          :text="author.text"
+          text="Здесь пока пусто"
           :bookCount="author.bookCount"
         />
       </div>
     </div>
     <div class="chat-block">
       <h3>Общий чат</h3>
-      <ChatBlock>
-        
-      </ChatBlock>
+      <ChatBlock> </ChatBlock>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
-import type { IBook, IAuthor } from "@/services/ApiInterfaces";
+import { onMounted, ref, type Ref } from "vue";
 import BookCard from "@/components/molecule/BookCard.vue";
 import AuthorCard from "@/components/molecule/AuthorCard.vue";
 import ChatBlock from "@/components/molecule/ChatBlock.vue";
 import Header from "@/components/molecule/Header.vue";
+import { getBooks } from "@/api/booksApi";
+import { getAuthors } from "@/api/authorsApi";
+import type { IAuthor, IBook } from "@/services/ApiInterfaces";
 
-const newBooks: Ref<IBook[]> = ref([
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-]);
+const newBooks: Ref<IBook[]> = ref([]);
 const bestBooks: Ref<IBook[]> = ref([]);
-const bestAuthors: Ref<IAuthor[]> = ref([
-  {
-    name: "Автор Авторович",
-    text: "Родился там в годах былых и очень крутой",
-    bookCount: 150,
-  },
-  {
-    name: "Автор Авторович",
-    text: "Родился там в годах былых и очень крутой",
-    bookCount: 150,
-  },
-  {
-    name: "Автор Авторович",
-    text: "Родился там в годах былых и очень крутой",
-    bookCount: 150,
-  },
-  {
-    name: "Автор Авторович",
-    text: "Родился там в годах былых и очень крутой",
-    bookCount: 150,
-  },
-]);
+const bestAuthors: Ref<IAuthor[]> = ref([]);
+
+const collectBooks = async () => {
+  const books = await getBooks();
+  let randNum = 0;
+  for (let i = 0; i < 10; i++) {
+    randNum = Math.floor(Math.random() * (books.data.content.length - 0 + 1));
+    newBooks.value.push({
+      id: books.data.content[randNum].id,
+      title: books.data.content[randNum].title,
+      text: books.data.content[randNum].description,
+      price: Math.floor(Math.random() * (5000 - 1000 + 1) + 1000),
+    });
+    randNum = Math.floor(Math.random() * (books.data.content.length - 0 + 1));
+    bestBooks.value.push({
+      id: books.data.content[randNum].id,
+      title: books.data.content[randNum].title,
+      text: books.data.content[randNum].description,
+      price: Math.floor(Math.random() * (5000 - 1000 + 1) + 1000),
+    });
+  }
+  console.log(books);
+};
+const collectAuthors = async () => {
+  const authors = await getAuthors();
+  let randNum = 0;
+  let curAuthor;
+  for (let i = 0; i < 4; i++) {
+    randNum = Math.floor(Math.random() * (authors.data.content.length - 0 + 1));
+    curAuthor = authors.data.content[randNum];
+    bestAuthors.value.push({
+      name: `${curAuthor.last_name} ${curAuthor.first_name}`,
+      bookCount: Math.floor(Math.random() * (100 - 1 + 1) + 1),
+    });
+  }
+};
+const collectChatHistory = async () => {
+  
+}
+
+onMounted(async () => {
+  await collectBooks();
+  await collectAuthors();
+});
 </script>
 
 <style scoped lang="scss">

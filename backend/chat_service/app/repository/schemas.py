@@ -13,3 +13,15 @@ class Message(BaseModel):
 
     class Config:
         from_attributes = True
+
+class Chat(BaseModel):
+    id: int
+    name: str
+    messages: list['Message']
+
+    class Config:
+        from_attributes = True
+
+
+class GetChatSchema(BaseModel):
+    name: str

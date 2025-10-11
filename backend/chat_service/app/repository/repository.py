@@ -1,6 +1,7 @@
 from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.repository.models import Chat, Message
 
@@ -14,6 +15,7 @@ class Repository:
             chat = Chat(name=chat_name)
             self.db.add(chat)
             await self.db.flush()
+            await self.db.refresh(chat)
             return chat
         except Exception as e:
             logger.warning(f'Error occured while creating chat: {e}')
@@ -29,10 +31,11 @@ class Repository:
         except Exception as e:
             logger.warning(f'Error occured while appending message: {e}')
             raise
-    
-    async def get_chat_messages(self, chat_id):
-        chat = await self.db.scalars(select(Chat))
-        print([ch.id for ch in chat.all()])
 
-        messages = await self.db.scalars(select(Message).where(Message.chat_id==chat_id))   
-        return messages.all()
+    async def get_chat(self, chat_name: str):
+        query = await self.db.scalar(
+            select(Chat)
+            .where(Chat.name == chat_name)
+            .options(joinedload(Chat.messages))
+        )
+        return query

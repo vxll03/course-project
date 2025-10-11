@@ -35,15 +35,17 @@ def CookiesResponse(token: TokenPair, message: str, is_created=False):
         key='access_token',
         value=token.access_token,
         max_age=settings.ACCESS_TOKEN_EXPIRE * 60,
-        expires=datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE),
+        expires=settings.ACCESS_TOKEN_EXPIRE * 60,
         httponly=not settings.IS_DEBUG,
+        secure=not settings.IS_DEBUG,
     )
     if token.refresh_token:
         response.set_cookie(
             key='refresh_token',
             value=token.refresh_token,
             max_age=settings.REFRESH_TOKEN_EXPIRE * 60 * 60 * 24,
-            expires=datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE),
+            expires=settings.REFRESH_TOKEN_EXPIRE * 60 * 60 * 24,
             httponly=not settings.IS_DEBUG,
+            secure=not settings.IS_DEBUG,
         )
     return response

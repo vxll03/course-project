@@ -8,6 +8,12 @@
 
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import { useUserStore } from './stores/userStore';
+import 'vue3-toastify/dist/index.css';
+import { onMounted } from "vue";
+
+const userStore = useUserStore();
+onMounted(() => userStore.isAuth = localStorage.getItem('isAuth') == 'true')
 </script>
 
 <style scoped lang="scss">

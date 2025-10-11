@@ -9,11 +9,18 @@ class TokenPair(BaseModel):
 class UserCreate(BaseModel):
     username: str = Field(min_length=4, max_length=100)
     password: str = Field(min_length=8, max_length=100)
+    password_repeat: str = Field(min_length=8, max_length=100)
 
     @model_validator(mode='after')
     def credentials_validate(self):
         if self.username == self.password:
             raise ValueError("Password and username can't match")
+        return self
+    
+    @model_validator(mode='after')
+    def validate_passworld(self):
+        if self.password != self.password_repeat:
+            raise ValueError("Passwords need to match")
         return self
 
 

@@ -3,7 +3,7 @@
     <Header></Header>
     <div class="book-container">
       <div class="top">
-        <h1>НАЗВАНИЕ КНИГИ | АВТОР АВТОРОВ АВТОРОВИЧ</h1>
+        <h1>{{ curBook.title }} | {{ curBook.author }}</h1>
       </div>
       <div class="bot">
         <div class="left-block">
@@ -15,23 +15,19 @@
           <div class="center">
             <h3>Описание</h3>
             <p>
-              тут текста многотут текста многотут текста многотут текста многотут
-              текста многотут текста много тут текста многотут текста многотут
-              текста многотут текста многотут текста многотут текста много тут
-              текста многотут текста многотут текста многотут текста многотут
-              текста многотут текста много тут текста многотут текста многотут
-              текста многотут текста многотут текста многотут текста много
+              {{ curBook.description }}
             </p>
             <h3>Похожие товары</h3>
             <div class="suggest-books">
               <BookCard
                 v-for="book in suggest"
+                :bookId="book.id"
                 :title="book.title"
                 :text="book.text"
                 :price="book.price"
               />
             </div>
-          </div>  
+          </div>
         </div>
         <div class="right-block">
           <ChatBlock></ChatBlock>
@@ -45,38 +41,73 @@
 import Header from "@/components/molecule/Header.vue";
 import BookCard from "@/components/molecule/BookCard.vue";
 import type { Ref } from "vue";
-import { ref } from "vue";
-import type { IBook } from "@/services/ApiInterfaces";
+import { onMounted, ref, watch } from "vue";
 import Button from "@/components/atom/Button.vue";
 import { greenColor } from "@/services/ColorSet";
-import ChatBlock from '@/components/molecule/ChatBlock.vue';
+import ChatBlock from "@/components/molecule/ChatBlock.vue";
+import { getBookById, getBooks } from "@/api/booksApi";
+import type { CurrentBook, IBook } from "@/services/ApiInterfaces";
+import { useRouter } from "vue-router";
 
-const suggest: Ref<IBook[]> = ref([
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-  {
-    title: "Название книги",
-    text: "Краткое описание в 100 символов обрезаное но тут очень много текста прям слишком",
-    price: 1520.2,
-    img: null,
-  },
-]);
+const router = useRouter();
+const bookId: Ref<number> = ref(parseInt(
+  router.currentRoute.value.fullPath.split("/")[2] ?? ""
+));
+
+const suggest: Ref<IBook[]> = ref([]);
+const curBook: Ref<CurrentBook> = ref({
+  id: -1,
+  title: '',
+  description: '',
+  author: '',
+} as CurrentBook)
+
+const getCurrentBookData = async () => {
+  const book = (await getBookById(bookId.value)).data.content;
+
+  curBook.value.id = book.id;
+  curBook.value.title = book.title;
+  curBook.value.description = book.description;
+  curBook.value.author = `${book.author.last_name} ${book.author.first_name} ${book.author.second_name}`;
+  console.log(curBook.value)
+};
+
+const collectBooks = async () => {
+  const books = await getBooks();
+  let randNum = 0;
+  suggest.value = [];
+  for (let i = 0; i < 4; i++) {
+    randNum = Math.floor(Math.random() * (books.data.content.length - 0 + 1));
+    suggest.value.push({
+      id: books.data.content[randNum].id,
+      title: books.data.content[randNum].title,
+      text: books.data.content[randNum].description,
+      price: Math.floor(Math.random() * (5000 - 1000 + 1) + 1000),
+    });
+  }
+};
+
+onMounted(async () => {
+  await collectBooks();
+  await getCurrentBookData();
+});
+
+watch(bookId, async (newBookId) => {
+  if (newBookId) {
+    await getCurrentBookData();
+    await collectBooks()
+  }
+});
+
+watch(
+  () => router.currentRoute.value.fullPath,
+  (newPath) => {
+    const newBookId = parseInt(newPath.split("/")[2] ?? "0");
+    if (newBookId !== bookId.value) {
+      bookId.value = newBookId;
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -162,7 +193,7 @@ const suggest: Ref<IBook[]> = ref([
   margin-left: 10px;
 }
 .right-block::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -1vw;
   width: 2px;

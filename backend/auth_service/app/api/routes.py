@@ -3,7 +3,6 @@ from loguru import logger
 from sqlalchemy import select
 
 from app.api.service import UserService
-from app.core.config import settings
 from app.core.database import get_db
 from app.repository.schemas import UserCreate, UserLogin
 from app.utils import CookiesResponse, Response

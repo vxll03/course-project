@@ -20,7 +20,7 @@ interface Props {
   text: string;
   img?: string;
   price: number;
-  book_id: string;
+  bookId: number;
 }
 const props = withDefaults(defineProps<Props>(), {
   img: "placeholder.png"
@@ -29,7 +29,7 @@ const imgPath = `src/assets/img/${props.img}`;
 
 const router = useRouter();
 const goToBook = () => {
-  router.push(`/book/${props.book_id}`)
+  router.push(`/book/${props.bookId}`);
 }
 
 </script>

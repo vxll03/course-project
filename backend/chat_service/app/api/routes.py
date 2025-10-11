@@ -5,6 +5,7 @@ from sqlalchemy import select
 from app.api.services import ChatService, ConnectionManager
 from app.core.database import get_db
 from app.repository.repository import Repository
+from app.repository.schemas import GetChatSchema
 from app.utils import Response
 
 router = APIRouter()
@@ -33,11 +34,16 @@ async def test_chat(db=Depends(get_db)):
             'chat created', {'id': chat.id, 'name': chat.name}, status_code=201
         )
 
+@router.post('/{chat_name}/')
+async def create_chat(chat_name: str, service: ChatService = Depends(get_service)):
+    chat = await service.create_chat(chat_name)
+    return Response('Chat created', chat, status_code=201)
 
-@router.get('/history/{chat_id}/')
-async def get_history(chat_id: str, service: ChatService = Depends(get_service)):
-    messages = await service.get_chat(int(chat_id))
-    return Response('Chat history successfully loaded', [msg.model_dump() for msg in messages])
+@router.get('/history/')
+async def get_history(chat_name: GetChatSchema, service: ChatService = Depends(get_service)):
+
+    chat = await service.get_chat(chat_name)
+    return Response('Chat history successfully loaded', chat)
 
 
 @router.websocket('/connect/{chat_id}/')
