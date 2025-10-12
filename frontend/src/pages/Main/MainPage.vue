@@ -31,7 +31,7 @@
     </div>
     <div class="chat-block">
       <h3>Общий чат</h3>
-      <ChatBlock> </ChatBlock>
+      <ChatBlock chatName="general"> </ChatBlock>
     </div>
   </div>
 </template>
@@ -69,7 +69,6 @@ const collectBooks = async () => {
       price: Math.floor(Math.random() * (5000 - 1000 + 1) + 1000),
     });
   }
-  console.log(books);
 };
 const collectAuthors = async () => {
   const authors = await getAuthors();
@@ -84,9 +83,6 @@ const collectAuthors = async () => {
     });
   }
 };
-const collectChatHistory = async () => {
-  
-}
 
 onMounted(async () => {
   await collectBooks();

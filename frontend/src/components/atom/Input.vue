@@ -1,9 +1,6 @@
 <template>
-  <div
-    class="input-container"
-    :style="customStyle"
-  >
-    <input :type="props.type" :placeholder="props.placeholder" />
+  <div class="input-container" :style="customStyle">
+    <input :type="props.type" :placeholder="props.placeholder" v-model="data" />
     <img v-if="props.img" :src="imgPath" alt="img" />
   </div>
 </template>
@@ -28,10 +25,11 @@ const props = withDefaults(defineProps<Props>(), {
 const imgPath = `src/assets/img/${props.img}`;
 const customStyle = ref({});
 customStyle.value = Object.assign({}, props.colorSet?.unpack(), {
-  '--width': props.size?.width,
-  '--height': props.size?.height
+  "--width": props.size?.width,
+  "--height": props.size?.height,
 });
 
+const data = defineModel<string>({ default: "" });
 </script>
 
 <style scoped lang="scss">

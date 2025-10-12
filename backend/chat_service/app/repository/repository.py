@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from app.exceptions import ChatDoesNotExistError
 from app.repository.models import Chat, Message
 
 
@@ -38,4 +39,6 @@ class Repository:
             .where(Chat.name == chat_name)
             .options(joinedload(Chat.messages))
         )
+        if not query:
+            raise ChatDoesNotExistError(chat_name)
         return query

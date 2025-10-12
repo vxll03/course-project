@@ -21,4 +21,18 @@ interface CurrentBook {
   author: string
 }
 
-export type { IAuthor, IBook, CurrentBook }
+interface Message{
+  id: number
+  text: string
+  timestamp: string
+  author: number
+  type: string
+}
+
+interface ChatHistory {
+  id: number
+  name: string
+  messages: Array<Message | null> 
+}
+
+export type { IAuthor, IBook, CurrentBook, Message, ChatHistory }

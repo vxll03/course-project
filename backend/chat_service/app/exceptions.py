@@ -1,4 +1,4 @@
 class ChatDoesNotExistError(Exception):
-    def __init__(self, chat_id: int, message='Chat does not exists') -> None:
+    def __init__(self, chat_name: str, message='Chat does not exists') -> None:
         super().__init__(message)
-        self.chat_id = chat_id
+        self.chat_name = chat_name

@@ -15,5 +15,5 @@ def register_exceptions_handler(app):
             message='Something went wrong',
             status='error',
             status_code=404,
-            content={'error': str(exc), 'data': {'username': exc.chat_id}},
+            content={'error': str(exc), 'data': {'username': exc.chat_name}},
         )

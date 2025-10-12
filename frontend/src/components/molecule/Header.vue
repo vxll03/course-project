@@ -36,7 +36,7 @@ const goToMain = () => {
 const exit = async () => {
   const response = await logout()
   if (response.status === 200) {
-    userStore.isAuth = false;
+    userStore.logout();
   }
 }
 </script>

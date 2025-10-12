@@ -27,6 +27,18 @@ async def health_check(db=Depends(get_db)):
         return Response(message='Service correctly working')
 
 
+@router.get('/users/me/')
+async def get_current_user(request: Request, service: UserService = Depends(get_service)):
+    user = await service.get_current_user(request.cookies.get('access_token'))
+    return Response('Current user successfully gotten', user)
+
+
+@router.get('/users/{id}')
+async def get_user_by_id(id: int, service: UserService = Depends(get_service)):
+    user = await service.get_user(id)
+    return Response('User sucessfully gotten', user)
+
+
 @router.post('/register/', status_code=201)
 async def register(user: UserCreate, service: UserService = Depends(get_service)):
     """Регистрация пользователя"""

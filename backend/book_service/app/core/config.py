@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     DB_PASS: str = Field(default='postgres')
     DB_NAME: str = Field(default='book_db')
 
+    CHAT_URL: str = Field(default='http://chat_service:8000')
+
     @property
     def DATABASE_URL(self):
         return f'postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'

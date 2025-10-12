@@ -80,8 +80,7 @@ const Authenticate = async () => {
       authData.value.password ?? ""
     );
     if (response.status === 200 || response.status === 201) {
-      userStore.isAuth = true;
-      localStorage.setItem("isAuth", "true");
+      userStore.Initialize();
       router.push(neededRoute ?? "/");
     }
   } catch (error: any) {
@@ -97,8 +96,7 @@ const Register = async () => {
       registerData.value.password2 ?? ""
     );
     if (response.status === 201) {
-      userStore.isAuth = true;
-      localStorage.setItem("isAuth", "true");
+      userStore.Initialize();
       router.push(neededRoute ?? "");
     }
   } catch (error: any) {

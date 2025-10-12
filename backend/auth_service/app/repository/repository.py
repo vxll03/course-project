@@ -39,3 +39,6 @@ class Repository:
 
     async def get_users(self, offset: int):
         return await self.db.scalars(select(User).offset(offset).limit(50))
+
+    async def get_user_by_id(self, id: int):
+        return await self.db.scalar(select(User).where(User.id == id))

@@ -1,6 +1,6 @@
 from typing import Generic, Optional, Type, TypeVar
-from loguru import logger
-from pydantic import BaseModel, TypeAdapter
+import httpx
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repository.repository import (
     AuthorRepository,
@@ -14,6 +14,7 @@ from app.repository.schemas import (
     CategoryReadSchema,
 )
 from app.repository.models import Author, Book, Category
+from app.core.config import settings
 
 T = TypeVar('T')
 
@@ -55,6 +56,17 @@ class BookService(GenericService[Book]):
 
     def get_serializer(self, method: str | None = None) -> Type[BaseModel]:
         return BookReadSchema
+    
+    async def create(self, obj_schema: BaseModel):
+        db_book = await super().create(obj_schema)
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(f'{settings.CHAT_URL}/chat/{db_book.get('title')}/')
+                response.raise_for_status()
+            except httpx.HTTPError as e:
+                print(f"Ошибка HTTP: {e}")
+        return db_book
+
 
 
 class AuthorService(GenericService[Author]):

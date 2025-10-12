@@ -13,7 +13,10 @@ import 'vue3-toastify/dist/index.css';
 import { onMounted } from "vue";
 
 const userStore = useUserStore();
-onMounted(() => userStore.isAuth = localStorage.getItem('isAuth') == 'true')
+onMounted(() => {
+  userStore.isAuth = localStorage.getItem('isAuth') == 'true'
+  userStore.userId = Number(localStorage.getItem('userId'))
+})
 </script>
 
 <style scoped lang="scss">

@@ -44,4 +44,11 @@ class UserActivationChange(BaseModel):
     is_active: bool
 
 
-# Authorization
+class UserReadSchema(BaseModel):
+    username: str
+
+    class Config: 
+        from_attributes = True
+
+class CurrentUserReadSchema(UserReadSchema):
+    id: int

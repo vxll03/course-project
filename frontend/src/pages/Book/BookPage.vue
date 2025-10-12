@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="right-block">
-          <ChatBlock></ChatBlock>
+          <ChatBlock :chatName="curBook.title"></ChatBlock>
         </div>
       </div>
     </div>
