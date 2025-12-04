@@ -19,7 +19,7 @@ class Repository:
             await self.db.refresh(chat)
             return chat
         except Exception as e:
-            logger.warning(f'Error occured while creating chat: {e}')
+            logger.warning(f'Произошла ошибка при создании чата: {e}')
             raise
 
     async def append_message(self, user_id, chat_id, text):
@@ -30,7 +30,7 @@ class Repository:
             await self.db.commit()
             return message
         except Exception as e:
-            logger.warning(f'Error occured while appending message: {e}')
+            logger.warning(f'Error occurred while appending message: {e}')
             raise
 
     async def get_chat(self, chat_name: str):

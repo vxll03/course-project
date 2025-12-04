@@ -6,3 +6,4 @@ export const getBooks = async () =>
 
 export const getBookById = async (id: number) =>
   await api.get(`${bookBase}/books/${id}`);
+

@@ -1,0 +1,77 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  auth_db:
+    image: postgres:17-bookworm
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    volumes:
+      - auth_db:/var/lib/postgresql/data
+
+  chat_db:
+    image: postgres:17-bookworm
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    volumes:
+      - chat_db:/var/lib/postgresql/data
+
+  book_db:
+    image: postgres:17-bookworm
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    volumes:
+      - book_db:/var/lib/postgresql/data
+
+  user_service:
+    build: ./backend/auth_service/
+    command: sh -c "./wait-for-it.sh auth_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - SECRET_KEY=E9AB13F523CA6BCF7962BB3E65AB76BCF7962BB3E65AB7
+      - IS_DEBUG=True
+      - DB_NAME=db
+      - DB_HOST=auth_db
+    depends_on:
+      - auth_db
+    ports:
+      - "8000:8000"
+
+  chat_service:
+    build: ./backend/chat_service/
+    command: sh -c "./wait-for-it.sh chat_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - DB_NAME=db 
+      - DB_HOST=chat_db
+    depends_on:
+      - chat_db
+    ports:
+      - "8001:8000"
+
+  book_service:
+    build: ./backend/book_service/
+    command: sh -c "./wait-for-it.sh book_db:5432 && uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      - DB_NAME=db 
+      - DB_HOST=book_db
+    depends_on:
+      - book_db
+    ports:
+      - "8002:8000"
+
+  frontend:
+    build: ./frontend/
+    ports:
+      - "5173:5173"
+
+volumes:
+  auth_db:
+  chat_db:
+  book_db:

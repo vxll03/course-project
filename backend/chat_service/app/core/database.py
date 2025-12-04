@@ -20,7 +20,9 @@ class Base(DeclarativeBase):
 
 async def get_db():
     """
-    Function generator that yields async session
+    Функция-генератор предоставляющая доступ к сессии БД
+    Автоматически сохраняет изменения при успехе и
+    Откатывает при ошибке
     """
     async with async_session() as session:
         try:

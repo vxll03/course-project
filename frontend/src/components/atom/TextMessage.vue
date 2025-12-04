@@ -23,6 +23,11 @@ const props = defineProps<Props>();
 const messageAuthor: Ref<string> = ref("Неизвестный пользователь");
 
 onMounted(async () => {
+  if (props.author === -1) {
+    messageAuthor.value = 'Неизвестный пользователь'
+    return
+  }
+
   if (typeof props.author === "number")
     messageAuthor.value =
       (await getUserById(props.author)).data.content.username ??

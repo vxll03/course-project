@@ -1,11 +1,10 @@
-from uuid import UUID, uuid1, uuid4
-from fastapi import APIRouter, Depends, Query, Request, WebSocket, WebSocketDisconnect
+from uuid import UUID, uuid1
+from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
 from loguru import logger
 from sqlalchemy import select
 
 from app.api.services import ChatService, ConnectionManager
 from app.core.database import get_db
-from app.repository.repository import Repository
 from app.utils import Response
 
 router = APIRouter()
@@ -45,16 +44,14 @@ async def get_history(chat_name: str, service: ChatService = Depends(get_service
 async def websocket(
     websocket: WebSocket,
     chat_id: int,
-    user_id: int | UUID = Query(..., description="User ID"),
+    user_id: int | None = Query(None),
 ):
-    logger.info('test_start')
     await websocket.accept()
     if not user_id:
-        user_id = uuid1()
+        user_id = -1
 
     async for session in get_db():
         service: ChatService = get_service(session)
-        logger.info('test')
         await ConnectionManager.connect(websocket, chat_id, user_id)
 
     try:

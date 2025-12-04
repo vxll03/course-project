@@ -1,8 +1,7 @@
 [project]
-name = "chat-service"
+name = "chat_service"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Модуль текстовой коммуникации"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",

@@ -68,7 +68,6 @@ class BookService(GenericService[Book]):
         return db_book
 
 
-
 class AuthorService(GenericService[Author]):
     def __init__(self, db: AsyncSession, load_options=None) -> None:
         super().__init__(AuthorRepository(db, load_options), Author)
@@ -83,3 +82,5 @@ class CategoryService(GenericService[Category]):
 
     def get_serializer(self, method: str | None = None) -> Type[BaseModel]:
         return CategoryReadSchema
+
+
