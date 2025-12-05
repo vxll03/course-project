@@ -1,0 +1,124 @@
+meta {
+  name: FILL_BOOK_DATABASE_TEST
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{local}}:8002/bookshop/books/
+  body: none
+  auth: inherit
+}
+
+script:pre-request {
+  const API_BASE = 'http://localhost:8002/bookshop';
+  
+  // 🔹 Данные для генерации
+  const FIRST_NAMES = ['Александр','Михаил','Дмитрий','Андрей','Сергей','Алексей','Иван','Владимир','Анна','Елена','Ольга','Мария','Наталья','Ирина','Светлана','Татьяна'];
+  const LAST_NAMES = ['Иванов','Петров','Сидоров','Смирнов','Кузнецов','Попов','Лебедев','Козлов','Новиков','Морозов'];
+  const SECOND_NAMES = ['Александрович','Михайлович','Дмитриевич','Андреевич','Сергеевич','Алексеевич'];
+  const CATEGORY_NAMES = ['Фантастика','Детектив','Роман','Поэзия','Драма','Комедия','Трагедия','Исторический','Биография','Научный'];
+  const CATEGORY_DESCRIPTIONS = CATEGORY_NAMES.map(name => `Описание категории: ${name}`);
+  const BOOK_TITLES = ['Тайна старого замка','Путешествие к центру земли','Звездные войны','Мир будущего','Последний из могикан'];
+  const BOOK_DESCRIPTIONS = ['Захватывающая история','Проникновенный рассказ','Фантастическое произведение','Детективная история','Романтическая история'];
+  
+  // 🔹 Генераторы случайных данных
+  function getRandomElement(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+  }
+  function getRandomInt(min,max) {
+      return Math.floor(Math.random()*(max-min+1))+min;
+  }
+  function getRandomDate(start,end) {
+      const date = new Date(start.getTime() + Math.random()*(end.getTime()-start.getTime()));
+      return date.toISOString().split('T')[0];
+  }
+  
+  // 🔹 Создание категорий
+  const categories = [];
+  function createCategory(i, callback) {
+      if(i >= CATEGORY_NAMES.length) return callback();
+      const data = { name: CATEGORY_NAMES[i], description: CATEGORY_DESCRIPTIONS[i] };
+      pm.sendRequest({
+          url: `${API_BASE}/categories/`,
+          method: 'POST',
+          header: { 'Content-Type': 'application/json' },
+          body: { mode: 'raw', raw: JSON.stringify(data) }
+      }, function(err, res){
+          if(err || !res.json()) console.log(`❌ Ошибка категории ${data.name}:`, err);
+          else {
+              categories.push(res.json());
+              console.log(`✅ Категория создана: ${data.name}`);
+          }
+          createCategory(i+1, callback);
+      });
+  }
+  
+  // 🔹 Создание авторов
+  const authors = [];
+  function createAuthor(i, callback) {
+      if(i >= 50) return callback();
+      const data = {
+          last_name: getRandomElement(LAST_NAMES),
+          first_name: getRandomElement(FIRST_NAMES),
+          second_name: getRandomElement(SECOND_NAMES)
+      };
+      pm.sendRequest({
+          url: `${API_BASE}/authors/`,
+          method: 'POST',
+          header: { 'Content-Type': 'application/json' },
+          body: { mode: 'raw', raw: JSON.stringify(data) }
+      }, function(err,res){
+          if(err || !res.json()) console.log(`❌ Ошибка автора:`, err);
+          else {
+              authors.push(res.json());
+              console.log(`✅ Автор создан: ${data.last_name} ${data.first_name}`);
+          }
+          createAuthor(i+1, callback);
+      });
+  }
+  
+  // 🔹 Создание книг
+  function createBook(i, callback) {
+      if(i >= 100) return callback();
+      if(categories.length === 0 || authors.length === 0) {
+          console.log('❌ Нет категорий или авторов для книги!');
+          return callback();
+      }
+      const data = {
+          title: getRandomElement(BOOK_TITLES)+' '+(i+1),
+          description: getRandomElement(BOOK_DESCRIPTIONS),
+          created: getRandomDate(new Date(1950,0,1), new Date(2023,11,31)),
+          age_restriction: getRandomInt(0,18),
+          category_id: getRandomElement(categories).id,
+          author_id: getRandomElement(authors).id
+      };
+      pm.sendRequest({
+          url: `${API_BASE}/books/`,
+          method: 'POST',
+          header: { 'Content-Type': 'application/json' },
+          body: { mode: 'raw', raw: JSON.stringify(data) }
+      }, function(err,res){
+          if(err || !res.json()) console.log(`❌ Ошибка книги ${i+1}:`, err);
+          else console.log(`📖 Книга создана: ${data.title}`);
+          createBook(i+1, callback);
+      });
+  }
+  
+  // 🔹 Запуск цепочки
+  console.log('🚀 Начинаем генерацию...');
+  createCategory(0, function(){
+      console.log('✅ Категории созданы');
+      createAuthor(0, function(){
+          console.log('✅ Авторы созданы');
+          createBook(0, function(){
+              console.log('✅ Все книги созданы!');
+          });
+      });
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

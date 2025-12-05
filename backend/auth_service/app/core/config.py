@@ -4,8 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     SECRET_KEY: str = Field(min_length=32)
-    ACCESS_TOKEN_EXPIRE: PositiveInt = Field(default=15)
-    REFRESH_TOKEN_EXPIRE: PositiveInt = Field(default=7)
+    ACCESS_TOKEN_EXPIRE: PositiveInt = Field(default=10000)
+    REFRESH_TOKEN_EXPIRE: PositiveInt = Field(default=10000)
     ALGORITHM: str = Field(default='HS256')
 
     IS_DEBUG: bool = Field(default=False)

@@ -53,6 +53,7 @@ class BookBaseSchema(BaseModel):
         from_attributes = True
 
 class BookReadSchema(BookBaseSchema):
+    id: int
     author: AuthorReadSchema
     category: CategoryReadSchema
     

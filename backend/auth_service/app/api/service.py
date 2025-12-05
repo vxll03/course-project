@@ -5,7 +5,7 @@ from app.core.security import (
 )
 from app.exceptions import InvalidCredentialsException, UserDoesNotExistError
 from app.repository.repository import Repository
-from app.repository.schemas import TokenPair
+from app.repository.schemas import CurrentUserReadSchema, TokenPair, UserReadSchema
 
 
 class UserService:
@@ -24,6 +24,20 @@ class UserService:
             refresh_token=refresh_token if refresh_token else None,
             token_type='bearer',
         )
+    
+    async def get_current_user(self, access_token):
+        if not access_token:
+            raise InvalidCredentialsException()
+        token = decode_token(access_token)
+        if token.get('id'):
+            user = await self.repo.get_user_by_id(token.get('id', -1))
+            return CurrentUserReadSchema.model_validate(user).model_dump()
+        return None
+
+    
+    async def get_user(self, id: int) -> dict:
+        db_user = await self.repo.get_user_by_id(id)
+        return UserReadSchema.model_validate(db_user).model_dump()
 
     async def create_user(self, user) -> TokenPair:
         db_user = await self.repo.create_user(user)

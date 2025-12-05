@@ -15,16 +15,14 @@ async_session = async_sessionmaker(
 
 
 class Base(DeclarativeBase):
-    def __str__(self) -> str:
-        cols = {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
-        }
-        return f'{self.__name__}: {cols}'
+    pass
 
 
 async def get_db():
     """
-    Function generator that yields async session
+    Функция-генератор предоставляющая доступ к сессии БД
+    Автоматически сохраняет изменения при успехе и
+    Откатывает при ошибке
     """
     async with async_session() as session:
         try:
